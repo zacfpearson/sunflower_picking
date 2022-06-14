@@ -1,3 +1,4 @@
+use bevy::audio::AudioSink;
 use bevy::ecs::schedule::SystemSet;
 use bevy::prelude::*;
 use rand::Rng;
@@ -64,6 +65,7 @@ fn setup(
     asset_server: Res<AssetServer>,
     mut game: ResMut<Game>,
     audio: Res<Audio>,
+    audio_sinks: Res<Assets<AudioSink>>,
 ) {
     game.flower_picked = 0;
     game.score = 0;
@@ -180,8 +182,11 @@ fn setup(
     );
 
     let music = asset_server.load("audio/FlowerCollecting.ogg");
-    audio.play(music);
+    let handle = audio_sinks.get_handle(audio.play_with_settings(music, PlaybackSettings::LOOP));
+    commands.insert_resource(MusicController(handle));
 }
+
+struct MusicController(Handle<AudioSink>);
 
 fn move_player(
     mut state: ResMut<State<GameState>>,
