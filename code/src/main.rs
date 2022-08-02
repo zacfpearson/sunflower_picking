@@ -192,6 +192,7 @@ fn move_player(
     mut state: ResMut<State<GameState>>,
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
+    touches: Res<Touches>,
     mut game: ResMut<Game>,
     mut transforms: Query<&mut Transform>,
     time: Res<Time>,
@@ -225,6 +226,33 @@ fn move_player(
                 game.player.j -= 1;
             }
             moved = true;
+        }
+
+        for finger in touches.iter() {
+            if finger.position().x - finger.start_position().x > 10.0 {
+                if game.player.i < BOARD_SIZE_I as usize / SPRITE_SIZE_I - 1 {
+                    game.player.i += 1;
+                }
+                moved = true;
+            }
+            if finger.position().x - finger.start_position().x < -10.0 {
+                if game.player.i > 0 {
+                    game.player.i -= 1;
+                }
+                moved = true;
+            }
+            if finger.position().y - finger.start_position().y > 10.0 {
+                if game.player.j < BOARD_SIZE_J as usize / SPRITE_SIZE_I - 1 {
+                    game.player.j += 1;
+                }
+                moved = true;
+            }
+            if finger.position().y - finger.start_position().y < -10.0 {
+                if game.player.j > 0 {
+                    game.player.j -= 1;
+                }
+                moved = true;
+            }
         }
 
         if moved {
