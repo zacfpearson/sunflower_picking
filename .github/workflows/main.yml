@@ -1,0 +1,56 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Linux_Container_Workflow
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:
+        # checkout the repo
+        - name: Checkout
+          uses: actions/checkout@v2
+          with:
+           path: main
+ 
+        - name: Docker Login
+          run: | 
+            docker login ${{ secrets.REGISTRY_LOGIN_SERVER }} -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
+        
+        - name: Build and Push
+          run: |
+            docker build main/code -f main/docker/Dockerfile.prod -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/roonr/sunflower-game:${{ github.sha }} 
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/roonr/sunflower-game:${{ github.sha }}
+      
+        - uses: actions/checkout@v2
+          with:
+           repository: 'zacfpearson/sunflower-manifests'
+           token: ${{ secrets.ACTION_TOKEN }}
+           path: sunflower-manifests
+           fetch-depth: 0
+            
+        - name: Update Manifests
+          run: |
+            cd sunflower-manifests/app/deployments
+            cat sunflower-deployment.yaml | sed -i "0,/image:.*$/s//image: ${{ secrets.REGISTRY_LOGIN_SERVER }}\/roonr\/sunflower-game:${{ github.sha }}/g" sunflower-deployment.yaml
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git commit -am "Bump docker tag"
+        - name: Push Manifest Changes
+          uses: ad-m/github-push-action@master
+          with:
+           github_token: ${{ secrets.ACTION_TOKEN }}
+           directory: 'sunflower-manifests'
+           repository: 'zacfpearson/sunflower-manifests'
+           branch: 'main'
