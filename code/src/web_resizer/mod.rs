@@ -82,7 +82,6 @@ pub fn resizer(
 #[cfg(target_arch = "wasm32")]
 pub fn web_size(width: &mut f32, height: &mut f32)
 {
-    let window = web_sys::window().expect("no global `window` exists");
-    *width = window.inner_width().unwrap().as_f64().unwrap() as f32;
-    *height = window.inner_height().unwrap().as_f64().unwrap() as f32;
+    *width = get_resize_width();
+    *height = (*width * 0.5).floor();
 }
