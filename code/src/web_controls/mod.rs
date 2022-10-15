@@ -1,7 +1,7 @@
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{Document, HtmlElement};
+use web_sys::{HtmlElement};
 
 #[wasm_bindgen]
 pub fn setup_web_controls() {
