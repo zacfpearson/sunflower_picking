@@ -1,0 +1,10 @@
+FROM ubuntu:focal as builder
+
+WORKDIR /build
+ENV PATH="/root/.cargo/bin:${PATH}"
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -y update && apt-get -y install curl build-essential libssl-dev pkg-config && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+    rustup target add wasm32-unknown-unknown && \
+    cargo install wasm-bindgen-cli --version 0.2.83

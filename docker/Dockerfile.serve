@@ -1,0 +1,5 @@
+FROM nginx
+
+COPY index.html /usr/share/nginx/html/sunflower/  
+COPY /pkg /usr/share/nginx/html/sunflower/pkg
+COPY assets /usr/share/nginx/html/sunflower/assets
