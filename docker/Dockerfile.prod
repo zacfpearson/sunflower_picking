@@ -1,5 +1,6 @@
 FROM ubuntu:focal as builder
 
+COPY . /build
 WORKDIR /build
 ENV PATH="/root/.cargo/bin:${PATH}"
 ARG DEBIAN_FRONTEND=noninteractive
