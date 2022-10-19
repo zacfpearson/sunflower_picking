@@ -4,9 +4,10 @@
 		<meta charset="utf-8">
 	        <meta name="viewport" content="width=device-width, initial-scale=1">	
 		<title>Sunflower</title>
-                <link href="/css/roonr.css" rel="stylesheet">
+            <link href="/css/roonr.css" rel="stylesheet">
 	        <link href="/css/comic.css" rel="stylesheet">
 	        <link href="/style.css" rel="stylesheet">
+			<link href="style.css" rel="stylesheet">
 	</head>
 	<body> 
                <div class="comic-container blogs" style="margin-top:10px;margin-bottom:10px;">
@@ -24,25 +25,25 @@
 		    <canvas id="bevy"></canvas>
 		</div>
 		<div id="controls" style="display:flex;width:100%;max-width:380px;margin:0 auto;margin-top:100px;">
-			<button class="arr flex" style="box-shadow:none;border-right:0px;visibility: hidden;">
+			<button class="arr flex noselect" style="box-shadow:none;border-right:0px;visibility: hidden;">
 				←
 			</button>
-			<button id="up" class="arr flex" style="box-shadow:none;border-bottom:0px;">
+			<button id="up" class="arr flex noselect" style="box-shadow:none;">
 				↑
 			</button>
-			<button class="arr flex" style="box-shadow:none;border-left:0px;visibility: hidden;">
+			<button class="arr flex noselect" style="box-shadow:none;border-left:0px;visibility: hidden;">
 				→
 			</button>
 		</div>
 
 		<div id="other-controls"  style="display:flex;width:100%;max-width:380px;margin:0 auto;">
-			<button id="left" class="arr flex" style="box-shadow:none;">
+			<button id="left" class="arr flex noselect" style="box-shadow:none;">
 				←
 			</button>
-			<button id="down" class="arr flex" style="box-shadow:none;border-left:0px;border-right:0px;">
+			<button id="down" class="arr flex noselect" style="box-shadow:none;border-left:0px;border-right:0px;">
 				↓
 			</button>
-			<button id="right" class="arr flex" style="box-shadow:none;">
+			<button id="right" class="arr flex noselect" style="box-shadow:none;">
 				→
 			</button>
 		</div>
