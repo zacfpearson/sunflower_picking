@@ -16,6 +16,7 @@ FROM nginx
 
 #COPY static /usr/share/nginx/html/sunflower/static
 COPY index.html /usr/share/nginx/html/sunflower/  
+COPY style.css /usr/share/nginx/html/sunflower/
 COPY --from=builder /build/pkg /usr/share/nginx/html/sunflower/pkg
 COPY assets /usr/share/nginx/html/sunflower/assets
 
