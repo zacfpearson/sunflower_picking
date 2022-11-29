@@ -5,3 +5,7 @@
     -ms-user-select: none !important; /* Internet Explorer/Edge */
     user-select: none !important; 
 }
+
+input[type="button"]{ 
+    touch-action: manipulation; 
+}

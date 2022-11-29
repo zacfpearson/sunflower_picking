@@ -10,7 +10,7 @@
 	        <link href="/style.css" rel="stylesheet">
 			<link href="style.css" rel="stylesheet">
 	</head>
-	<body> 
+	<body class="noselect"> 
         <div class="comic-container blogs" style="margin-top:10px;margin-bottom:10px;">
 	        <div class="comic" text="Sunflower">
 				Sunflower
@@ -49,7 +49,14 @@
 			</button>
 		</div>
 		<script>
-                        let resize_canvas = (width, height) => {
+			async function lock_screen() {
+				await window.screen.orientation.lock("natural");
+			}
+
+			lock_screen();
+		</script>
+		<script>
+            let resize_canvas = (width, height) => {
 			    let canvas = document.getElementsByTagName("canvas")[0];
 			    if( canvas != null) {
 			        canvas.width = width;
@@ -64,7 +71,7 @@
 			async function run () {
 			    await init();
 
-			}	
+			}
 
 			run();
 
