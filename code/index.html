@@ -49,11 +49,21 @@
 			</button>
 		</div>
 		<script>
-			async function lock_screen() {
-				await window.screen.orientation.lock("natural");
-			}
+			let orientation_change = false;
 
-			lock_screen();
+			let set_orientation = (state) => {
+				orientation_change = state;
+			};
+
+			let get_orientation = () => {
+				return orientation_change;
+			};
+			
+			let portrait = window.matchMedia("(orientation: portrait)");
+
+			portrait.addEventListener("change", function(e) {
+				set_orientation(true);
+			})
 		</script>
 		<script>
             let resize_canvas = (width, height) => {

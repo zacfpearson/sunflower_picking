@@ -25,6 +25,13 @@ pub fn get_resize_width() -> f32
 #[wasm_bindgen]
 extern "C" {
     fn resize_canvas(width: f32, height: f32);
+
+    fn get_orientation() -> bool;
+
+    fn set_orientation(state: bool);
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -68,7 +75,18 @@ pub fn resizer(
                 transform.translation *= Vec3::new(width / window.width(), height / window.height(), 1.0);
             }
 
-            window.update_actual_size_from_backend(width as u32, height as u32);
+            //update_actual_size_from_backend doesn't work on mobile orientation change.
+            //The new window size gets very small. So, using set_resolution in these instances. 
+            if get_orientation()
+            {
+                window.set_resolution(width, height);
+                set_orientation(false);
+            }
+            else
+            {
+                window.update_actual_size_from_backend(width as u32, height as u32);
+            }
+    
             window_resized_events.send(WindowResized {
                 id: window.id(),
                 height: height,
