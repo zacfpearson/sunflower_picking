@@ -132,8 +132,6 @@ pub fn setup_web(app: &mut App) {
 
     app.add_system(web_audio::web_audio_control);
 
-    web_controls::setup_web_controls();
-
     web_controls::show_canvas();
 
     web_controls::toggle_loading();
@@ -321,34 +319,26 @@ fn setup_game_translation(initial_x: f32,initial_y: f32, game: &ResMut<Game>) ->
     )
 }
 
-//todo: get rid of this possibly
 #[cfg(target_arch = "wasm32")]
-fn check_web_move(total_columns: usize, total_rows: usize, player: &mut Player, web_move: &mut bool) {
-    if web_controls::check_right() {
-        if player.i < total_columns - 1 {
-            player.i += 1;
-            *web_move = true;
-        }
-    }
-    if web_controls::check_left() {
-        if player.i > 0 {
-            player.i -= 1;
-            *web_move = true;
-        }
-    }
+fn check_web_move(web_up: &mut bool, web_down: &mut bool, web_right: &mut bool, web_left: &mut bool) {
     if web_controls::check_up() {
-        if player.j < total_rows - 1 {
-            player.j += 1;
-            *web_move = true;
-        }
+        *web_up = true;
     }
+
     if web_controls::check_down() {
-        if player.j > 0 {
-            player.j -= 1;
-            *web_move = true;
-        }
+        *web_down = true;
+    }
+
+    if web_controls::check_right() {
+        *web_right = true;
+    }
+
+    if web_controls::check_left() {
+        *web_left = true;
     }
 }
+
+
 
 //TODO: fix border issue on web where the block can't move to last row or column
 fn move_player(
@@ -365,38 +355,41 @@ fn move_player(
     }
     if game.player.move_cooldown.tick(time.delta()).finished() {
         let mut moved = false;
-        let mut web_moved = false;
+        
+        let mut web_up = false;
+        let mut web_down = false;
+        let mut web_right = false;
+        let mut web_left = false;
 
-        if keyboard_input.pressed(KeyCode::Right) {
+        #[cfg(target_arch = "wasm32")]
+        check_web_move(&mut web_up, &mut web_down, &mut web_right, &mut web_left);
+
+        if keyboard_input.pressed(KeyCode::Right) || web_right {
             if game.player.i < game.total_columns - 1 {
                 game.player.i += 1;
                 moved = true;
             }
         }
-        if keyboard_input.pressed(KeyCode::Left) {
+        if keyboard_input.pressed(KeyCode::Left) || web_left {
             if game.player.i > 0 {
                 game.player.i -= 1;
                 moved = true;
             }
         }
-        if keyboard_input.pressed(KeyCode::Up) {
+        if keyboard_input.pressed(KeyCode::Up) || web_up {
             if game.player.j < game.total_rows - 1 {
                 game.player.j += 1;
                 moved = true;
             }
         }
-        if keyboard_input.pressed(KeyCode::Down) {
+        if keyboard_input.pressed(KeyCode::Down) || web_down {
             if game.player.j > 0 {
                 game.player.j -= 1;
                 moved = true;
             }
         }
 
-        //check_web
-        #[cfg(target_arch = "wasm32")]
-        check_web_move(game.total_columns, game.total_rows, &mut game.player, &mut web_moved);
-
-        if moved || web_moved {
+        if moved {
             game.player.move_cooldown.reset();
             if let Some(player_entity) = game.player.entity {
                 if let Ok(mut player_transform) = transforms.get_mut(player_entity) {

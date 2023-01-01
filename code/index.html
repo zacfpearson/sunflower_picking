@@ -19,10 +19,12 @@
 
         <div class="center">
 			<p style="margin-top:10px;">
-			        Made with Bevy. 
+			        Welcome to the home of the Sunflower Game! This game takes 5 minutes or so to complete so, sit back, relax, and enjoy the game! <br> 
+					The goal of the game is for you(the green square) to collect the sunflower(orange square). <br>
+					If you have a keyboard, use the arrow keys to move or, if on mobile, use the arrow buttons. Have fun!
 			</p>
 		</div>
-		<div style="max-width:100px;width:100%;margin:0 auto; padding-bottom:15px;padding-top: 15px;">
+		<div style="max-width:100px;width:100%;margin:0 auto; margin-bottom:15px;margin-top: 15px;">
 			<button id="audio_control" style="background:none;width:100%;border:2px #FD7014 solid;"><img id="sound_icon" style="width:100%;" alt="play" src="assets/images/sound_on.png"/></button>
 		</div>
 		<div id="bevy-container" style="margin:0px auto;width:100%;max-width:1200px;position:relative;"> 
@@ -34,26 +36,26 @@
 		</div>
 
 		<div id="show_controls" style="visibility:hidden;">
-			<div id="controls" style="display:flex;width:100%;max-width:380px;margin:0 auto;margin-top:100px;">
-				<button class="arr flex noselect" style="box-shadow:none;border-right:0px;visibility: hidden;">
+			<div id="controls" style="display:flex;width:100%;max-width:380px;margin:0 auto;margin-top:15px;">
+				<button class="arr flex noselect" style="height:150px;line-height:150px;box-shadow:none;border-right:0px;visibility: hidden;">
 					←
 				</button>
-				<button id="up" class="arr flex noselect" style="box-shadow:none;">
+				<button id="up" class="arr flex noselect" style="height:150px;line-height:150px;box-shadow:none;">
 					↑
 				</button>
-				<button class="arr flex noselect" style="box-shadow:none;border-left:0px;visibility: hidden;">
+				<button class="arr flex noselect" style="height:150px;line-height:150px;box-shadow:none;border-left:0px;visibility: hidden;">
 					→
 				</button>
 			</div>
 
 			<div id="other-controls"  style="display:flex;width:100%;max-width:380px;margin:0 auto;">
-				<button id="left" class="arr flex noselect" style="box-shadow:none;">
+				<button id="left" class="arr flex noselect" style="height:150px;line-height:150px;box-shadow:none;">
 					←
 				</button>
-				<button id="down" class="arr flex noselect" style="box-shadow:none;border-left:0px;border-right:0px;">
+				<button id="down" class="arr flex noselect" style="height:150px;line-height:150px;box-shadow:none;border-left:0px;border-right:0px;">
 					↓
 				</button>
-				<button id="right" class="arr flex noselect" style="box-shadow:none;">
+				<button id="right" class="arr flex noselect" style="height:150px;line-height:150px;box-shadow:none;">
 					→
 				</button>
 			</div>
@@ -112,6 +114,106 @@
 					bevy.focus();
 				}
 			});
+		</script>
+		<script>
+			let move_up = false;
+			let move_down = false;
+			let move_left = false;
+			let move_right = false;
+
+			let set_up_press = (state) => {
+				move_up = state;
+			};
+
+			let get_up_pressed = () => {
+				return move_up;
+			};
+
+			let set_down_press = (state) => {
+				move_down = state;
+			};
+
+			let get_down_pressed = () => {
+				return move_down;
+			};
+
+			let set_left_press = (state) => {
+				move_left = state;
+			};
+
+			let get_left_pressed = () => {
+				return move_left;
+			};
+
+			let set_right_press = (state) => {
+				move_right = state;
+			};
+
+			let get_right_pressed = () => {
+				return move_right;
+			};
+
+			let up_pressed = () => {
+				document.getElementById("up").style.backgroundColor = "#FD7014";
+				set_up_press(true);
+			}
+
+			let up_released = () => {
+				document.getElementById("up").style.backgroundColor = "transparent";
+				set_up_press(false);
+			}
+
+			let down_pressed = () => {
+				document.getElementById("down").style.backgroundColor = "#FD7014";
+				set_down_press(true);
+			}
+
+			let down_released = () => {
+				document.getElementById("down").style.backgroundColor = "transparent";
+				set_down_press(false);
+			}
+
+			let right_pressed = () => {
+				document.getElementById("right").style.backgroundColor = "#FD7014";
+				set_right_press(true);
+			}
+
+			let right_released = () => {
+				document.getElementById("right").style.backgroundColor = "transparent";
+				set_right_press(false);
+			}
+
+			let left_pressed = () => {
+				document.getElementById("left").style.backgroundColor = "#FD7014";
+				set_left_press(true);
+			}
+
+			let left_released = () => {
+				document.getElementById("left").style.backgroundColor = "transparent";
+				set_left_press(false);
+			}
+
+			document.getElementById("up").addEventListener("mousedown", up_pressed);
+			document.getElementById("up").addEventListener("mouseup", up_released);
+			document.getElementById("up").addEventListener("touchstart", up_pressed);
+			document.getElementById("up").addEventListener("touchend", up_released);
+
+			document.getElementById("down").addEventListener("mousedown", down_pressed);
+			document.getElementById("down").addEventListener("mouseup", down_released);
+			document.getElementById("down").addEventListener("touchstart", down_pressed);
+			document.getElementById("down").addEventListener("touchend", down_released);
+
+			document.getElementById("right").addEventListener("mousedown", right_pressed);
+			document.getElementById("right").addEventListener("mouseup", right_released);
+			document.getElementById("right").addEventListener("touchstart", right_pressed);
+			document.getElementById("right").addEventListener("touchend", right_released);
+			
+			document.getElementById("left").addEventListener("mousedown", left_pressed);
+			document.getElementById("left").addEventListener("mouseup", left_released);
+			document.getElementById("left").addEventListener("touchstart", left_pressed);
+			document.getElementById("left").addEventListener("touchend", left_released);
+
+			
 		</script>
 		<script>
 			let supports_touch = 'ontouchstart' in window || navigator.msMaxTouchPoints;
