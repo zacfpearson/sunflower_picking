@@ -6,3 +6,24 @@
     user-select: none !important; 
     touch-action: none;
 }
+
+.pause {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    transform: scale(var(--ggs,1));
+    width: 8px;
+    height: 10px;
+    border-left: 3px solid;
+    border-right: 3px solid;
+}
+
+.play {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    transform: scale(var(--ggs,1));
+    width: 22px;
+    height: 22px
+}
+

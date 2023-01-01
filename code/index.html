@@ -22,32 +22,104 @@
 			        Made with Bevy. 
 			</p>
 		</div>
-		<div id="bevy-container" style="margin:0px auto;width:100%;max-width:1200px;"> 
-		    <canvas id="bevy"></canvas>
+		<div style="max-width:100px;width:100%;margin:0 auto; padding-bottom:15px;padding-top: 15px;">
+			<button id="audio_control" style="background:none;width:100%;border:2px #FD7014 solid;"><img id="sound_icon" style="width:100%;" alt="play" src="assets/images/sound_on.png"/></button>
 		</div>
-		<div id="controls" style="display:flex;width:100%;max-width:380px;margin:0 auto;margin-top:100px;">
-			<button class="arr flex noselect" style="box-shadow:none;border-right:0px;visibility: hidden;">
-				←
-			</button>
-			<button id="up" class="arr flex noselect" style="box-shadow:none;">
-				↑
-			</button>
-			<button class="arr flex noselect" style="box-shadow:none;border-left:0px;visibility: hidden;">
-				→
-			</button>
+		<div id="bevy-container" style="margin:0px auto;width:100%;max-width:1200px;position:relative;"> 
+			<div id="loading" style="visibility:visible;display:box;aspect-ratio:2;position:absolute;width:100%;background-color:#FD7014;z-index:10;text-align:center;">
+				<div style="width:100%;height:50%;"></div>
+				<div>LOADING...</div>
+			</div>
+		    <canvas style="visibility:hidden;outline:none;" id="bevy"></canvas>
 		</div>
 
-		<div id="other-controls"  style="display:flex;width:100%;max-width:380px;margin:0 auto;">
-			<button id="left" class="arr flex noselect" style="box-shadow:none;">
-				←
-			</button>
-			<button id="down" class="arr flex noselect" style="box-shadow:none;border-left:0px;border-right:0px;">
-				↓
-			</button>
-			<button id="right" class="arr flex noselect" style="box-shadow:none;">
-				→
-			</button>
+		<div id="show_controls" style="visibility:hidden;">
+			<div id="controls" style="display:flex;width:100%;max-width:380px;margin:0 auto;margin-top:100px;">
+				<button class="arr flex noselect" style="box-shadow:none;border-right:0px;visibility: hidden;">
+					←
+				</button>
+				<button id="up" class="arr flex noselect" style="box-shadow:none;">
+					↑
+				</button>
+				<button class="arr flex noselect" style="box-shadow:none;border-left:0px;visibility: hidden;">
+					→
+				</button>
+			</div>
+
+			<div id="other-controls"  style="display:flex;width:100%;max-width:380px;margin:0 auto;">
+				<button id="left" class="arr flex noselect" style="box-shadow:none;">
+					←
+				</button>
+				<button id="down" class="arr flex noselect" style="box-shadow:none;border-left:0px;border-right:0px;">
+					↓
+				</button>
+				<button id="right" class="arr flex noselect" style="box-shadow:none;">
+					→
+				</button>
+			</div>
 		</div>
+		<script>
+			//AudioContext bit of code was taken from here: https://developers.google.com/web/updates/2018/11/web-audio-autoplay#moving-forward
+			//It keeps track of all AudioContexts and resumes them. The differnce is that here it's desired to only play
+			//when a user hits play. Whereas the link above resumes the contexts on any user interaction.
+
+			// An array of all contexts to resume on the page
+			const audioContextList = [];
+
+			// A proxy object to intercept AudioContexts and
+			// add them to the array for tracking and resuming later
+			self.AudioContext = new Proxy(self.AudioContext, {
+				construct(target, args) {
+					const result = new target(...args);
+					audioContextList.push(result);
+					return result;
+				},
+			});
+
+			let audio_toggled = false;
+
+			let set_audio_toggled= (state) => {
+				audio_toggled = state;
+			};
+
+			let get_audio_toggled = () => {
+				return audio_toggled;
+			};
+			
+			let audio_control = document.getElementById("audio_control");
+
+			audio_control.addEventListener("click", function(e) {
+				let sound_icon = document.getElementById("sound_icon");
+				if(sound_icon.alt == "play") {
+					sound_icon.setAttribute("alt","pause");
+					sound_icon.setAttribute("src", "assets/images/sound_off.png");
+				} else {
+					sound_icon.setAttribute("alt","play");
+					sound_icon.setAttribute("src", "assets/images/sound_on.png");
+				}
+				audioContextList.forEach((context) => {
+					//Resume context if it is the first time, otherwise tell bevy to handle play/pause.
+					if (context.state !== "running") {
+						console.log("resuming context!");
+						context.resume();
+					} else {
+						set_audio_toggled(true);
+					}
+				});
+
+				let bevy = document.getElementById("bevy")
+				if( !touch_supported() && bevy.style.visibility == "visible") {
+					bevy.focus();
+				}
+			});
+		</script>
+		<script>
+			let supports_touch = 'ontouchstart' in window || navigator.msMaxTouchPoints;
+
+			let touch_supported = () => {
+				return supports_touch;
+			};
+		</script>
 		<script>
 			let orientation_change = false;
 
@@ -66,6 +138,10 @@
 			})
 		</script>
 		<script>
+			let show_canvas = () => {
+				document.getElementById("bevy").style.visibility = "visible";
+			}
+
             let resize_canvas = (width, height) => {
 			    let canvas = document.getElementsByTagName("canvas")[0];
 			    if( canvas != null) {
@@ -80,11 +156,9 @@
 
 			async function run () {
 			    await init();
-
 			}
 
 			run();
-
 		</script>
 	</body>
 </html>

@@ -11,6 +11,9 @@ mod web_resizer;
 #[cfg(target_arch = "wasm32")]
 mod web_controls;
 
+#[cfg(target_arch = "wasm32")]
+mod web_audio;
+
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
 enum GameState {
     Playing,
@@ -51,8 +54,6 @@ struct Game {
     original_sprite_width: f32,
     original_sprite_height: f32,
 }
-
-struct MusicController(Handle<AudioSink>);
 
 fn get_original_size(min_width: f32, max_width: f32, min_height: f32, max_height: f32) -> (f32,f32)
 {
@@ -118,6 +119,7 @@ fn all(app: &mut App)
         })
         .init_resource::<Game>()
         .add_plugins(DefaultPlugins)
+        .add_startup_system(audio)
         .add_state(GameState::Playing)
         .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(initialize))
         .add_system_set(SystemSet::on_update(GameState::Playing).with_system(move_player))
@@ -128,16 +130,33 @@ fn all(app: &mut App)
 pub fn setup_web(app: &mut App) {
     app.add_system(web_resizer::resizer);
 
+    app.add_system(web_audio::web_audio_control);
+
     web_controls::setup_web_controls();
+
+    web_controls::show_canvas();
+
+    web_controls::toggle_loading();
+}
+
+//Note: This needs to be a startup system, or the MusiController resource can't be found by 
+//      the web_audio query at runtime.
+fn audio(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    audio: Res<Audio>,
+    audio_sinks: Res<Assets<AudioSink>>,
+) {
+    let music = asset_server.load("audio/FlowerCollecting.ogg");
+        let handle =
+            audio_sinks.get_handle(audio.play_with_settings(music, PlaybackSettings::LOOP));
+        commands.insert_resource(resizable::MusicController(handle));
 }
 
 fn initialize(
     mut commands: Commands,
     mut windows: ResMut<Windows>,
-    asset_server: Res<AssetServer>,
     mut game: ResMut<Game>,
-    audio: Res<Audio>,
-    audio_sinks: Res<Assets<AudioSink>>,
 ) {
     if let Some(window) = windows.get_primary_mut() {
         //Initialize Game Object
@@ -231,7 +250,7 @@ fn initialize(
                             new_blue = 0.0;
                         }
 
-                        let mut visible = false; //TODO: change to false
+                        let mut visible = false;
                         if i == game.bonus.i && j == game.bonus.j {
                             visible = true;
                         }
@@ -286,11 +305,6 @@ fn initialize(
                 }).insert(resizable::Resizable)
                 .id(),
         );
-
-        let music = asset_server.load("audio/FlowerCollecting.ogg");
-        let handle =
-            audio_sinks.get_handle(audio.play_with_settings(music, PlaybackSettings::LOOP));
-        commands.insert_resource(MusicController(handle));
     }
 }
 
@@ -313,29 +327,30 @@ fn check_web_move(total_columns: usize, total_rows: usize, player: &mut Player, 
     if web_controls::check_right() {
         if player.i < total_columns - 1 {
             player.i += 1;
+            *web_move = true;
         }
-        *web_move = true;
     }
     if web_controls::check_left() {
         if player.i > 0 {
             player.i -= 1;
+            *web_move = true;
         }
-        *web_move = true;
     }
     if web_controls::check_up() {
         if player.j < total_rows - 1 {
             player.j += 1;
+            *web_move = true;
         }
-        *web_move = true;
     }
     if web_controls::check_down() {
         if player.j > 0 {
             player.j -= 1;
+            *web_move = true;
         }
-        *web_move = true;
     }
 }
 
+//TODO: fix border issue on web where the block can't move to last row or column
 fn move_player(
     mut state: ResMut<State<GameState>>,
     mut commands: Commands,
@@ -350,31 +365,31 @@ fn move_player(
     }
     if game.player.move_cooldown.tick(time.delta()).finished() {
         let mut moved = false;
-        let mut web_moved = false; //todo: change for all directions
+        let mut web_moved = false;
 
         if keyboard_input.pressed(KeyCode::Right) {
             if game.player.i < game.total_columns - 1 {
                 game.player.i += 1;
+                moved = true;
             }
-            moved = true;
         }
         if keyboard_input.pressed(KeyCode::Left) {
             if game.player.i > 0 {
                 game.player.i -= 1;
+                moved = true;
             }
-            moved = true;
         }
         if keyboard_input.pressed(KeyCode::Up) {
             if game.player.j < game.total_rows - 1 {
                 game.player.j += 1;
+                moved = true;
             }
-            moved = true;
         }
         if keyboard_input.pressed(KeyCode::Down) {
             if game.player.j > 0 {
                 game.player.j -= 1;
+                moved = true;
             }
-            moved = true;
         }
 
         //check_web
