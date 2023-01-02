@@ -9,6 +9,7 @@
 	        <link href="/css/comic.css" rel="stylesheet">
 	        <link href="/style.css" rel="stylesheet">
 			<link href="style.css" rel="stylesheet">
+			<script src="assets/js/unmute.min.js"></script> 
 	</head>
 	<body class="noselect"> 
         <div class="comic-container blogs" style="margin-top:10px;margin-bottom:10px;">
@@ -98,6 +99,17 @@
 					sound_icon.setAttribute("src", "assets/images/sound_on.png");
 				}
 				audioContextList.forEach((context) => {
+					if (context)
+					{
+						// If you need to be able to disable unmute at a later time, you can use the returned handle's dispose() method
+						// if you don't need to do that (most folks won't) then you can simply ignore the return value
+						let _ = unmute(context, false, false);
+						
+						// // ... at some later point you wish to STOP unmute control
+						// unmuteHandle.dispose();
+						// unmuteHandle = null;
+					}
+
 					//Resume context if it is the first time, otherwise tell bevy to handle play/pause.
 					if (context.state !== "running") {
 						console.log("resuming context!");
