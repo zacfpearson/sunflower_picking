@@ -77,6 +77,14 @@
 				},
 			});
 
+			audioContextList.forEach((context) => {
+				if (context)
+				{
+					// Odd IOS error with mute button
+					let _ = unmute(context, false, false);
+				}
+			});
+
 			let audio_toggled = false;
 
 			let set_audio_toggled= (state) => {
@@ -99,20 +107,8 @@
 					sound_icon.setAttribute("src", "assets/images/sound_on.png");
 				}
 				audioContextList.forEach((context) => {
-					if (context)
-					{
-						// If you need to be able to disable unmute at a later time, you can use the returned handle's dispose() method
-						// if you don't need to do that (most folks won't) then you can simply ignore the return value
-						let _ = unmute(context, false, false);
-						
-						// // ... at some later point you wish to STOP unmute control
-						// unmuteHandle.dispose();
-						// unmuteHandle = null;
-					}
-
 					//Resume context if it is the first time, otherwise tell bevy to handle play/pause.
 					if (context.state !== "running") {
-						console.log("resuming context!");
 						context.resume();
 					} else {
 						set_audio_toggled(true);
