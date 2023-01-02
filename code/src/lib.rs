@@ -364,25 +364,25 @@ fn move_player(
         #[cfg(target_arch = "wasm32")]
         check_web_move(&mut web_up, &mut web_down, &mut web_right, &mut web_left);
 
-        if keyboard_input.pressed(KeyCode::Right) || web_right {
+        if keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D)  || web_right {
             if game.player.i < game.total_columns - 1 {
                 game.player.i += 1;
                 moved = true;
             }
         }
-        if keyboard_input.pressed(KeyCode::Left) || web_left {
+        if keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A) || web_left {
             if game.player.i > 0 {
                 game.player.i -= 1;
                 moved = true;
             }
         }
-        if keyboard_input.pressed(KeyCode::Up) || web_up {
+        if keyboard_input.pressed(KeyCode::Up) || keyboard_input.pressed(KeyCode::W) || web_up {
             if game.player.j < game.total_rows - 1 {
                 game.player.j += 1;
                 moved = true;
             }
         }
-        if keyboard_input.pressed(KeyCode::Down) || web_down {
+        if keyboard_input.pressed(KeyCode::Down) || keyboard_input.pressed(KeyCode::S) || web_down {
             if game.player.j > 0 {
                 game.player.j -= 1;
                 moved = true;
