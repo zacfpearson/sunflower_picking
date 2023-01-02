@@ -102,8 +102,6 @@
 					//Resume context if it is the first time, otherwise tell bevy to handle play/pause.
 					if (context.state !== "running") {
 						context.resume();
-						// Odd IOS error with mute button
-						let _ = unmute(context, false, false);
 					} else {
 						set_audio_toggled(true);
 					}
@@ -258,6 +256,11 @@
 
 			async function run () {
 			    await init();
+
+				audioContextList.forEach((context) => {
+					// Odd IOS error with mute button
+					let _ = unmute(context, false, false);
+				});
 			}
 
 			run();
