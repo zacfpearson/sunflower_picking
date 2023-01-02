@@ -52,7 +52,17 @@ pub fn toggle_loading()
         .dyn_ref::<HtmlElement>()
         .expect("should be HtmlElement");
 
-    loading_element.style().set_property("visibility","hidden").expect("can't set visibility to hidden property");
+    loading_element.style().set_property("visibility","hidden").expect("can't set visibility to hidden");
+
+    let audio_container_element_temp = document
+        .get_element_by_id("audio_container")
+        .expect("should have audio_container element");
+    
+    let audio_container_element = audio_container_element_temp
+        .dyn_ref::<HtmlElement>()
+        .expect("should be HtmlElement");
+
+    audio_container_element.style().set_property("visibility","visible").expect("can't set visibility to visible");
     
     if touch_supported()
     {
@@ -64,7 +74,7 @@ pub fn toggle_loading()
             .dyn_ref::<HtmlElement>()
             .expect("should be HtmlElement");
 
-        controls_element.style().set_property("visibility","visible").expect("can't change visibility to hidden");
+        controls_element.style().set_property("visibility","visible").expect("can't change visibility to visible");
     } else {
         let canvas_element_temp = document
         .get_element_by_id("bevy")
