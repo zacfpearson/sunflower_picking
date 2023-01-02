@@ -7,22 +7,6 @@ use bevy::window::{WindowResized};
 use crate::resizable::Resizable;
 
 #[wasm_bindgen]
-pub fn get_resize_width() -> f32
-{
-    let window = web_sys::window().expect("no global `window` exists");
-    let document = window.document().expect("should have a document window");
-    let binding = document.get_element_by_id("bevy-container").expect("should have app element");
-    let canvas = binding
-        .dyn_ref::<HtmlElement>()
-        .expect("should be an HtmlElement");
-
-    
-    let width: f32 = canvas.offset_width() as f32;
-
-    return width;
-}
-
-#[wasm_bindgen]
 extern "C" {
     fn resize_canvas(width: f32, height: f32);
 
@@ -32,6 +16,30 @@ extern "C" {
 
     #[wasm_bindgen(js_namespace = console)]
     fn log(s: &str);
+}
+
+#[wasm_bindgen]
+pub fn get_resize_width() -> f32
+{
+    let window = web_sys::window().expect("no global `window` exists");
+    let document = window.document().expect("should have a document window");
+    let binding = document.get_element_by_id("bevy-container").expect("should have app element");
+    let canvas = binding
+        .dyn_ref::<HtmlElement>()
+        .expect("should be an HtmlElement");
+    
+    //TODO: The resize goes crazy if the width isn't a factor of 16. 
+    //      This is because of how the grid is setup. If the calculated height of all the elments is greater
+    //      than that of canvas, the sizes blow up. This is not a general way to do this and should be fixed!
+    let mut even_width = canvas.offset_width();
+    while even_width.rem_euclid(16) != 0
+    {
+        even_width = even_width - 1;
+    }
+
+    let width: f32 = even_width as f32;
+
+    return width;
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -102,4 +110,5 @@ pub fn web_size(width: &mut f32, height: &mut f32)
 {
     *width = get_resize_width();
     *height = (*width * 0.5).floor();
+    resize_canvas(*width, *height); //SEE TODO above, this should not be needed
 }

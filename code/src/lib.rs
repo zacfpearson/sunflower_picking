@@ -172,8 +172,8 @@ fn initialize(
         
         game.original_width = window.width() as f32;
         game.original_height = window.height() as f32;
-        game.original_sprite_width = window.width() / (game.total_columns as f32);
-        game.original_sprite_height = window.height() / (game.total_rows as f32);
+        game.original_sprite_width = window.width() as f32 / (game.total_columns as f32);
+        game.original_sprite_height = window.height() as f32 / (game.total_rows as f32);
 
         commands.spawn_bundle(Camera2dBundle::default());
 
@@ -312,7 +312,7 @@ fn setup_game_translation(initial_x: f32,initial_y: f32, game: &ResMut<Game>) ->
      initial_x * game.original_sprite_width
             - game.original_width / 2.0
             + game.original_sprite_width / 2.0,
-            initial_y as f32 * game.original_sprite_height
+            initial_y * game.original_sprite_height
             - game.original_height / 2.0
             + game.original_sprite_height / 2.0,
         0.0,
